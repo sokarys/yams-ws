@@ -9,6 +9,7 @@ import com.sun.jersey.api.client.config.DefaultClientConfig;
 
 import java.io.StringReader;
 import java.net.URI;
+import java.util.ArrayList;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.UriBuilder;
 import javax.xml.bind.JAXBContext;
@@ -37,8 +38,12 @@ public class Testeur {
         System.out.println(service.path("List").accept(MediaType.APPLICATION_XML).get(String.class));
         
         String repUser = service.path("User").path("T1").path("pass").accept(MediaType.APPLICATION_XML).get(String.class);
+        String repUser2 = service.path("User").path("T2").path("pass1").accept(MediaType.APPLICATION_XML).get(String.class);
+        String repUser3 = service.path("User").path("T3/plop").accept(MediaType.APPLICATION_XML).get(String.class);
         String repList = service.path("List").accept(MediaType.APPLICATION_XML).get(String.class);
         
+        System.out.println(repUser2);
+        System.out.println(" --"  + repUser3);
         System.out.println("\n\n\n");
         
         
@@ -51,7 +56,17 @@ public class Testeur {
         
         JAXBElement<Client> r = (JAXBElement<Client>) un.unmarshal(new StreamSource(new StringReader(xmlstr.toString())),Client.class);
         
-        System.out.println(r.getValue());        
+        mar = JAXBContext.newInstance(ArrayList.class);
+        un = mar.createUnmarshaller();
+        xmlstr = new StringBuilder(repUser);
+        System.out.println("\n\n\n");
+        //String rep = service.path("/getUser/T1/pass").get(String.class).toString();
+        //System.out.println(rep);
+        
+        JAXBElement<ArrayList> r2 = (JAXBElement<ArrayList>) un.unmarshal(new StreamSource(new StringReader(xmlstr.toString())),ArrayList.class);
+        
+        System.out.println(r.getValue()); 
+        System.out.println(r2.getValue().size());        
       
         
 
