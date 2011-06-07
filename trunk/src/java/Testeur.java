@@ -2,6 +2,9 @@
 
 
 import Client.Client;
+import Client.ClientSave;
+import Client.Historique;
+import com.sun.jersey.api.client.GenericType;
 import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.api.client.config.ClientConfig;
 import com.sun.jersey.api.client.config.DefaultClientConfig;
@@ -14,6 +17,8 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.UriBuilder;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
+import javax.xml.bind.Unmarshaller;
+import javax.xml.namespace.QName;
 import javax.xml.transform.stream.StreamSource;
 
 
@@ -34,46 +39,20 @@ public class Testeur {
         
         WebResource service = client.resource(getBaseURI());
         
-        System.out.println(service.path("User").path("T1").path("pass").accept(MediaType.APPLICATION_XML).get(String.class));
-        System.out.println(service.path("List").accept(MediaType.APPLICATION_XML).get(String.class));
-        
-        String repUser = service.path("User").path("T1").path("pass").accept(MediaType.APPLICATION_XML).get(String.class);
-        String repUser2 = service.path("User").path("T2").path("pass1").accept(MediaType.APPLICATION_XML).get(String.class);
-        String repUser3 = service.path("User").path("T3/plop").accept(MediaType.APPLICATION_XML).get(String.class);
-        String repList = service.path("List").accept(MediaType.APPLICATION_XML).get(String.class);
-        
-        System.out.println(repUser2);
-        System.out.println(" --"  + repUser3);
-        System.out.println("\n\n\n");
-        
-        
-        JAXBContext mar = JAXBContext.newInstance(Client.class);
-        javax.xml.bind.Unmarshaller un = mar.createUnmarshaller();
-        StringBuilder xmlstr = new StringBuilder(repUser);
-        System.out.println("\n\n\n");
-        //String rep = service.path("/getUser/T1/pass").get(String.class).toString();
-        //System.out.println(rep);
-        
-        JAXBElement<Client> r = (JAXBElement<Client>) un.unmarshal(new StreamSource(new StringReader(xmlstr.toString())),Client.class);
-        
-        mar = JAXBContext.newInstance(ArrayList.class);
-        un = mar.createUnmarshaller();
-        xmlstr = new StringBuilder(repUser);
-        System.out.println("\n\n\n");
-        //String rep = service.path("/getUser/T1/pass").get(String.class).toString();
-        //System.out.println(rep);
-        
-        JAXBElement<ArrayList> r2 = (JAXBElement<ArrayList>) un.unmarshal(new StreamSource(new StringReader(xmlstr.toString())),ArrayList.class);
-        
-        System.out.println(r.getValue()); 
-        System.out.println(r2.getValue().size());        
-      
-        
-
-        
-        /*JAXBContext jc = JAXBContext.newInstance(Client.class);
-        Unmarshaller unmarshaller = jc.createUnmarshaller();
-        JAXBElement<Client> c = (JAXBElement<Client>) unmarshaller.unmarshal(new StreamSource(new StringReader(xmlstr.toString())),Client.class);*/
+	ClientSave sc = new ClientSave();
+	sc.setHistorique(new Historique());
+	sc.setLogin("tesd");
+	sc.setPassword("sdfsdf");
+	
+	
+	GenericType<JAXBElement<ClientSave>> ClientSaveType = new GenericType<JAXBElement<ClientSave>>() {};
+	ClientSave cs = service.path("User").path("T1").path("pass").accept(MediaType.APPLICATION_XML).get(ClientSaveType).getValue();
+	
+	System.out.println(cs);
+	
+        service.path("setUser").accept(MediaType.APPLICATION_XML_TYPE).post(new JAXBElement<ClientSave>(new QName("ClientSave"),ClientSave.class,sc));
+	 
+	System.out.println(service.path("List").accept(MediaType.APPLICATION_XML).get(String.class));
         
     }
     public static URI getBaseURI(){
